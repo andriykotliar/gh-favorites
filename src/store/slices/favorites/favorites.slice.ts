@@ -1,14 +1,14 @@
 import { Reducers } from "@/common";
 import { RootState } from "@/store";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { RepositoryDataFragment } from "@/__generated__/graphql";
+
+type RepositoryStoreType = {
+  rating?: number;
+} & RepositoryDataFragment;
 
 type InitialState = {
-  repositories: {
-    [key: string]: {
-      id: string;
-      rating: number;
-    }
-  };
+  repositories: RepositoryStoreType[];
 };
 
 type UpdateRatingPayload = {
@@ -17,34 +17,45 @@ type UpdateRatingPayload = {
 };
 
 const initialState: InitialState = {
-  repositories: {},
-}
+  repositories: [],
+};
 
 const favoritesSlice = createSlice({
   name: Reducers.FAVORITES,
   initialState,
   reducers: {
-    updateFavorites: (state, { payload }: PayloadAction<string>) => {
-      if(state.repositories[payload]) {
-        delete state.repositories[payload];
-      } else {
-        state.repositories[payload] = {
-          id: payload,
-          rating: 0
-        }
-      };
+    addToFavorites: (
+      state,
+      action: PayloadAction<RepositoryDataFragment>
+    ) => {
+      state.repositories.push(action.payload);
+    },
+    removeFromFavorites: (
+      state,
+      action: PayloadAction<string>,
+    ) => {
+      state.repositories = state.repositories.filter(
+        (repository) => repository.id !== action.payload,
+      );
     },
     updateRating: (
       state,
       { payload }: PayloadAction<UpdateRatingPayload>
     ) => {
-      if(state.repositories[payload.repoId]) {
-        state.repositories[payload.repoId].rating = payload.value;
+      const repository = state.repositories.find((repo) => repo.id === payload.repoId);
+
+      if(repository) {
+        repository.rating = payload.value; 
       }
     }
   },
 });
 
 export const selectFavorites = (state: RootState) => state.favorites.repositories;
-export const { updateFavorites, updateRating } = favoritesSlice.actions;
+export const {
+  addToFavorites,
+  removeFromFavorites,
+  updateRating
+} = favoritesSlice.actions;
+export type { RepositoryStoreType };
 export default favoritesSlice.reducer;
