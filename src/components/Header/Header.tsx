@@ -5,12 +5,12 @@ import {
   Container,
   IconButton,
   Menu,
-  Toolbar,
-  Typography
+  Toolbar
 } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
 import { navigation } from "./navigation";
 import { HeaderNavItem } from "./HeaderNavItem";
+import { HeaderLogo } from "./HeaderLogo";
 
 const Header = () => {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
@@ -24,12 +24,10 @@ const Header = () => {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar position="sticky">
       <Container>
         <Toolbar sx={{ justifyContent: 'space-between' }}>
-          <Typography variant="h5" component="span">
-            GithubFavorites
-          </Typography>
+          <HeaderLogo />
           <Box
             sx={{ display: { xs: 'none', sm: 'flex' } }}
             component="ul"
