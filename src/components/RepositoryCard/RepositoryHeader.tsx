@@ -3,15 +3,17 @@ import TurnedInNotIcon from '@mui/icons-material/TurnedInNot';
 import TurnedInIcon from '@mui/icons-material/TurnedIn';
 import { FC } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store';
-import { selectFavorites, updateFavorites } from '@/store/slices/favorites/favorites.slice';
+import {
+  selectFavorites,
+  addToFavorites,
+  removeFromFavorites
+} from '@/store/slices/favorites/favorites.slice';
 import { RepositoryTitle } from './RepositoryTitle';
 import { RepositoryArchivedBage } from './RepositoryArchivedBage';
+import { RepositoryDataFragment } from '@/__generated__/graphql';
 
 type RepositoryHeaderProps = {
-  repoId: string;
-  url: string;
-  title: string;
-  isRepoArchived: boolean;
+  repository: RepositoryDataFragment;
 };
 
 const rootBoxStyle = {
@@ -28,34 +30,34 @@ const titleBoxStyle = {
 };
 
 const RepositoryHeader: FC<RepositoryHeaderProps> = ({
-  repoId,
-  url,
-  title,
-  isRepoArchived,
+  repository
 }) => {
   const dispatch = useAppDispatch();
   const favorites = useAppSelector(selectFavorites);
-  const tooltipTitle = favorites[repoId] ? 'Remove from favorites' : 'Add to favorites';
+  const isFavorite = favorites.find((favRepo) => favRepo.id === repository.id);
+  const tooltipTitle = isFavorite ? 'Remove from favorites' : 'Add to favorites';
 
   return (
     <Box sx={rootBoxStyle} pb={2}>
       <Box sx={titleBoxStyle}>
         <RepositoryTitle
-          url={url}
-          title={title}
+          url={repository.url}
+          title={repository.nameWithOwner}
         />
         <RepositoryArchivedBage
-          isArchived={isRepoArchived}
+          isArchived={repository.isArchived}
         />
       </Box>
       <Tooltip title={tooltipTitle}>
-        <IconButton onClick={() => dispatch(updateFavorites(repoId))}>
-          {favorites[repoId] ? (
+        {isFavorite ? (
+          <IconButton onClick={() => dispatch(removeFromFavorites(repository.id))}>
             <TurnedInIcon color="primary" />
-          ) : (
+          </IconButton>
+        ) : (
+          <IconButton onClick={() => dispatch(addToFavorites(repository))}>
             <TurnedInNotIcon />
-          )}
-        </IconButton>
+          </IconButton>
+        )}
       </Tooltip>
     </Box>
   );

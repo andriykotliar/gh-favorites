@@ -1,13 +1,13 @@
 import { FC } from 'react';
 import { Card, CardContent } from '@mui/material';
-import { RepositoryDataFragment } from '@/__generated__/graphql';
 import { RepositoryHeader } from './RepositoryHeader';
 import { RepositoryDescription } from './RepositoryDescription';
 import { RepositoryMeta } from './RepositoryMeta';
 import { RepositoryRating } from './RepositoryRating';
+import { RepositoryStoreType } from '@/store/slices/favorites/favorites.slice';
 
 type RepositoryCardProps = {
-  repository: RepositoryDataFragment;
+  repository: RepositoryStoreType;
   showRating?: boolean;
 };
 
@@ -18,12 +18,7 @@ const RepositoryCard: FC<RepositoryCardProps> = ({
   return (
     <Card variant="outlined">
       <CardContent>
-        <RepositoryHeader
-          repoId={repository.id}
-          url={repository.url}
-          title={repository.nameWithOwner}
-          isRepoArchived={repository.isArchived}
-        />
+        <RepositoryHeader repository={repository} />
         <RepositoryDescription
           description={repository.descriptionHTML}
         />
@@ -33,7 +28,7 @@ const RepositoryCard: FC<RepositoryCardProps> = ({
           stars={repository.stargazerCount}
         />
         {showRating && (
-          <RepositoryRating repoId={repository.id} />
+          <RepositoryRating repoId={repository.id} rating={repository?.rating} />
         )}
       </CardContent>
     </Card>
