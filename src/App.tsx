@@ -1,6 +1,10 @@
+import { Header } from "@/components";
+
 const App = () => {
   return (
-    <div />
+    <div className="App">
+      <Header />
+    </div>
   );
 };
 
